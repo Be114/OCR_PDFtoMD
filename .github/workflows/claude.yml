@@ -4,16 +4,21 @@ on:
     types: [created]
 
 permissions:
-  issues: write     # Issueへのコメント書き込みに必要
-  contents: write   # ★★★ これが重要！ブランチ作成やコード変更に必要 ★★★
-  pull-requests: write # もしClaudeがPRを作成するなら、これも追加しておくと良い
+  issues: write
+  contents: write
+  pull-requests: write
 
 jobs:
   create-pr:
     if: contains(github.event.comment.body, '@claude')
     runs-on: ubuntu-latest
     steps:
-      - uses: anthropics/claude-code-action@beta
+      # ↓↓↓ このステップを追加 ↓↓↓
+      - name: Checkout code
+        uses: actions/checkout@v4 # または @v3 など、最新の安定バージョン
+
+      - name: Claude Code Action
+        uses: anthropics/claude-code-action@beta
         with:
           allowed_tools: "Bash(git status),Bash(git log),Bash(git diff),View,GlobTool"
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
