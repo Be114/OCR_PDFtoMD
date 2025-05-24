@@ -3,9 +3,10 @@ on:
   issue_comment:
     types: [created]
 
-permissions: # このセクションを追加
-  issues: write
-  contents: read # 念のため追加
+permissions:
+  issues: write     # Issueへのコメント書き込みに必要
+  contents: write   # ★★★ これが重要！ブランチ作成やコード変更に必要 ★★★
+  pull-requests: write # もしClaudeがPRを作成するなら、これも追加しておくと良い
 
 jobs:
   create-pr:
@@ -17,4 +18,4 @@ jobs:
           allowed_tools: "Bash(git status),Bash(git log),Bash(git diff),View,GlobTool"
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          model: "claude-sonnet-4-20250514"
+          # model: "claude-3-opus-20240229"
