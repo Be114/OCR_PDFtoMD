@@ -12,6 +12,7 @@ import json
 import base64
 import io
 from dotenv import load_dotenv
+import concurrent.futures
 
 # .envファイルから環境変数を読み込む
 load_dotenv()
@@ -85,28 +86,42 @@ class KindleOCR:
             return None
 
     def process_images_to_markdown(self, image_files, output_path):
-        """画像ファイルのリストを処理してMarkdownファイルを生成"""
+        """画像ファイルのリストを処理してMarkdownファイルを生成（並列処理対応）"""
         try:
-            all_text = []
+            max_workers = 5  # 並列処理数を5に固定
+            all_text_results = [None] * len(image_files)  # 結果をページ順に格納するリスト
             success_count = 0
             
-            print(f"OCR処理開始: {len(image_files)}個の画像を処理します")
+            print(f"OCR処理開始（並列数: {max_workers}）: {len(image_files)}個の画像を処理します")
             
-            for i, image_path in enumerate(image_files, 1):
-                print(f"処理中 ({i}/{len(image_files)}): {os.path.basename(image_path)}")
+            # ThreadPoolExecutorを使用して並列処理
+            with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+                # {future: page_index}の辞書を作成し、完了時に元のページインデックスを取得できるようにする
+                future_to_page_index = {
+                    executor.submit(self.extract_text, image_path): i
+                    for i, image_path in enumerate(image_files)
+                }
                 
-                text = self.extract_text(image_path)
-                if text:
-                    all_text.append(f"## ページ {i}\n\n{text}")
-                    success_count += 1
-                    print(f"テキスト抽出成功: {len(text)} 文字")
-                else:
-                    print(f"テキスト抽出失敗: {os.path.basename(image_path)}")
-                    all_text.append(f"## ページ {i}\n\n[テキスト抽出に失敗しました]")
+                # as_completedで完了した順に処理
+                for i, future in enumerate(concurrent.futures.as_completed(future_to_page_index)):
+                    page_idx = future_to_page_index[future]
+                    try:
+                        text = future.result()  # この呼び出しで例外が発生する可能性もある
+                        if text:
+                            all_text_results[page_idx] = f"## ページ {page_idx + 1}\n\n{text}"
+                            success_count += 1
+                            print(f"ページ {page_idx + 1}/{len(image_files)} のテキスト抽出成功 ({i+1}タスク完了)")
+                        else:
+                            all_text_results[page_idx] = f"## ページ {page_idx + 1}\n\n[テキスト抽出に失敗しました]"
+                            print(f"ページ {page_idx + 1}/{len(image_files)} のテキスト抽出失敗 ({i+1}タスク完了)")
+                    except Exception as exc:
+                        all_text_results[page_idx] = f"## ページ {page_idx + 1}\n\n[テキスト抽出エラー: APIリクエスト失敗]"
+                        print(f'ページ {page_idx + 1}/{len(image_files)} の処理で例外発生: {exc} ({i+1}タスク完了)')
             
             # Markdownファイルに保存
-            if all_text:
-                markdown_content = '\n\n'.join(all_text)
+            if all_text_results:
+                # all_text_resultsにはNoneが含まれる可能性があるのでフィルタリング
+                markdown_content = '\n\n'.join(filter(None, all_text_results))
                 
                 # 出力ディレクトリを確保
                 os.makedirs(os.path.dirname(output_path), exist_ok=True)
@@ -115,6 +130,7 @@ class KindleOCR:
                     f.write(markdown_content)
                 
                 print(f"Markdownファイルを保存しました: {output_path}")
+                print(f"OCR処理完了 - 成功: {success_count}/{len(image_files)}ページ, 並列数: {max_workers}")
                 return success_count, len(image_files)
             
             return 0, len(image_files)
