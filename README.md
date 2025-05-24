@@ -1,7 +1,7 @@
-# Kindle PDF処理Webアプリケーション
+# PDF処理Webアプリケーション
 
 ## 概要
-このアプリケーションは、KindleのPDFファイルをアップロードしてOCR処理を行い、Markdownファイルとして出力するWebベースのシステムです。
+このアプリケーションは、PDFファイルをアップロードしてOCR処理を行い、Markdownファイルとして出力するWebベースのシステムです。
 OpenRouter APIとGoogle Gemini Flashを活用した高精度なOCR機能により、PDFから正確なテキストを抽出し、読みやすいMarkdown形式で提供します。
 
 ## 機能
