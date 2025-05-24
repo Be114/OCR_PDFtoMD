@@ -3,16 +3,18 @@ on:
   issue_comment:
     types: [created]
 
+permissions: # このセクションを追加
+  issues: write
+  contents: read # 念のため追加
+
 jobs:
   create-pr:
-    if: contains(github.event.comment.body, '@claude') # このif条件で @claude を含むコメントに反応
+    if: contains(github.event.comment.body, '@claude')
     runs-on: ubuntu-latest
     steps:
       - uses: anthropics/claude-code-action@beta
         with:
-          # ↓↓↓ 'prompt:' の行を削除する ↓↓↓
-          # prompt: "${{ github.event.comment.body }}" # この行を削除またはコメントアウト
           allowed_tools: "Bash(git status),Bash(git log),Bash(git diff),View,GlobTool"
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          model: "claude-sonnet-4-20250514" # 必要であればモデル指定
+          model: "claude-sonnet-4-20250514"
