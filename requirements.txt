@@ -5,3 +5,4 @@ reportlab==4.0.4
 requests==2.31.0
 pyautogui==0.9.54
 PyMuPDF==1.23.14
+python-dotenv==1.0.0
