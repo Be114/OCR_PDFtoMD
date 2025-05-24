@@ -15,4 +15,4 @@ jobs:
           allowed_tools: "Bash(git status),Bash(git log),Bash(git diff),View,GlobTool"
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          model: "claude-sonnet-4" # 必要であればモデル指定
+          model: "claude-sonnet-4-20250514" # 必要であればモデル指定
