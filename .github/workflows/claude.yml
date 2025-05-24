@@ -13,14 +13,13 @@ jobs:
     if: contains(github.event.comment.body, '@claude')
     runs-on: ubuntu-latest
     steps:
-      # ↓↓↓ このステップを追加 ↓↓↓
       - name: Checkout code
-        uses: actions/checkout@v4 # または @v3 など、最新の安定バージョン
+        uses: actions/checkout@v4
 
       - name: Claude Code Action
         uses: anthropics/claude-code-action@beta
         with:
-          allowed_tools: "Bash(git status),Bash(git log),Bash(git diff),View,GlobTool"
+          allowed_tools: "View,Edit,Replace,DeleteFile,CreateFile,GlobTool,GrepTool,Bash(git status),Bash(git diff),Bash(git log),Bash(git show),Bash(git blame),Bash(git reflog),Bash(git stash list),Bash(git ls-files),Bash(git branch),Bash(git tag),Bash(git checkout),Bash(git add .),Bash(git commit -m \"Automated commit by Claude\"),Bash(git push origin HEAD),Bash(find . -name '*.py'),Bash(ls -la),NotebookEditCell,TaskOutput"
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          # model: "claude-3-opus-20240229"
+          model: "claude-sonnet-4-20250514"
