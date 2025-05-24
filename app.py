@@ -11,6 +11,10 @@ import requests
 import json
 import base64
 import io
+from dotenv import load_dotenv
+
+# .envファイルから環境変数を読み込む
+load_dotenv()
 
 # KindleOCRクラスの統合
 class KindleOCR:

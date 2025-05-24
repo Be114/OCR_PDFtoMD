@@ -63,29 +63,25 @@
 
 ## 設定
 ### APIキーの設定
-OpenRouter APIキーは環境変数で設定してください：
+OCR機能を使用するためにOpenRouter APIキーが必要です：
 
-1. **環境変数ファイルの作成**:
+1. **APIキーの取得**: [OpenRouter](https://openrouter.ai/)でアカウントを作成してAPIキーを取得してください。
+
+2. **環境変数ファイルの作成**:
    ```bash
    cp .env.example .env
    ```
 
-2. **.envファイルを編集**:
+3. **.envファイルを編集**:
+   エディタで `.env` ファイルを開き、取得したAPIキーを設定してください：
    ```
-   OPENROUTER_API_KEY=your-actual-api-key-here
-   ```
-
-3. **環境変数の読み込み**（Windows）:
-   ```bash
-   set OPENROUTER_API_KEY=your-api-key-here
+   OPENROUTER_API_KEY=sk-your-actual-api-key-here
    ```
 
-4. **環境変数の読み込み**（Linux/Mac）:
-   ```bash
-   export OPENROUTER_API_KEY=your-api-key-here
-   ```
+4. **アプリケーションの再起動**:
+   APIキーを設定した後、アプリケーションを再起動してください。
 
-**APIキーの取得**: [OpenRouter](https://openrouter.ai/)でアカウントを作成してAPIキーを取得してください。
+**注意**: `.env` ファイルはGitの管理対象外なので、APIキーが誤ってコミットされる心配はありません。
 
 ### アップロード制限
 - 対応ファイル形式: PDF
